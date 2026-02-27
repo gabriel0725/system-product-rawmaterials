@@ -8,6 +8,7 @@ import com.gabriel.stock.dto.product.ProductResponseDTO;
 import com.gabriel.stock.entity.Product;
 import com.gabriel.stock.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ProductController {
     private final ProductService service;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Product create(@RequestBody Product product) {
         return service.create(product);
     }

@@ -8,7 +8,6 @@ import com.gabriel.stock.entity.Product;
 import com.gabriel.stock.entity.ProductMaterial;
 import com.gabriel.stock.entity.RawMaterial;
 import com.gabriel.stock.port.ProductFinder;
-import com.gabriel.stock.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -184,5 +183,59 @@ public class ProductionServiceTest {
 
         assertEquals(1, response.products().size());
         assertEquals("Expensive", response.products().get(0).productName());
+    }
+
+    @Test
+    void shouldConsumeStockFromMoreExpensiveProductFirst() {
+
+        RawMaterial material = new RawMaterial();
+        material.setStockQuantity(10);
+
+        Product expensive = new Product();
+        expensive.setName("Expensive");
+        expensive.setPrice(BigDecimal.valueOf(200));
+
+        Product cheap = new Product();
+        cheap.setName("Cheap");
+        cheap.setPrice(BigDecimal.valueOf(100));
+
+        ProductMaterial rel1 = new ProductMaterial();
+        rel1.setProduct(expensive);
+        rel1.setRawMaterial(material);
+        rel1.setRequiredQuantity(5);
+
+        ProductMaterial rel2 = new ProductMaterial();
+        rel2.setProduct(cheap);
+        rel2.setRawMaterial(material);
+        rel2.setRequiredQuantity(5);
+
+        expensive.setMaterials(List.of(rel1));
+        cheap.setMaterials(List.of(rel2));
+
+        ProductFinder finder = () -> List.of(expensive, cheap);
+
+        ProductionService service = new ProductionService(finder);
+
+        var response = service.calculateProduction();
+
+        assertEquals(1, response.products().size());
+        assertEquals("Expensive", response.products().get(0).productName());
+    }
+
+
+    @Test
+    void shouldIgnoreProductWithoutMaterials() {
+        Product product = new Product();
+        product.setName("Empty Product");
+        product.setPrice(BigDecimal.valueOf(100));
+        product.setMaterials(List.of());
+
+        ProductFinder finder = () -> List.of(product);
+
+        ProductionService service = new ProductionService(finder);
+
+        var response = service.calculateProduction();
+
+        assertTrue(response.products().isEmpty());
     }
 }

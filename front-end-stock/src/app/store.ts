@@ -5,13 +5,15 @@ import productReducer from "../features/product/productSlice"
 import rawMaterialReducer from "../features/rawMaterial/rawMaterialSlice"
 import productMaterialReducer from "../features/productMaterial/productMaterialSlice"
 
+export const rootReducer = {
+  production: productionReducer,
+  product: productReducer,
+  rawMaterial: rawMaterialReducer,
+  productMaterial: productMaterialReducer,
+}
+
 export const store = configureStore({
-  reducer: {
-    production: productionReducer,
-    product: productReducer,
-    rawMaterial: rawMaterialReducer,
-    productMaterial: productMaterialReducer,
-  },
+  reducer: rootReducer,
   devTools: import.meta.env.MODE !== "production",
 })
 

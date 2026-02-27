@@ -1,4 +1,5 @@
 export interface ProductProduction {
+  productId?: number
   productName: string;
   quantityPossible: number;
   unitPrice: number;
