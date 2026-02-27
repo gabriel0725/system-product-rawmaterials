@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react"
-import { createProduct, updateProduct } from "../features/product/productSlice"
-import { useAppDispatch } from "../app/hooks"
-import type { Product } from "../features/product/types"
+import { useState, useEffect } from 'react'
+import { createProduct, updateProduct } from '../features/product/productSlice'
+import { useAppDispatch } from '../app/hooks'
+import type { Product } from '../features/product/types'
+import { ButtonRed, ButtonBlue, StyledForm } from '../styles/Layout'
 
 interface Props {
   editing: Product | null
@@ -18,9 +19,9 @@ export default function ProductForm({ editing, setEditing }: Props) {
   const dispatch = useAppDispatch()
 
   const [formData, setFormData] = useState<ProductFormData>({
-    code: "",
-    name: "",
-    price: "",
+    code: '',
+    name: '',
+    price: ''
   })
 
   // Sincroniza o form com o produto selecionado para edição
@@ -29,10 +30,10 @@ export default function ProductForm({ editing, setEditing }: Props) {
       setFormData({
         code: editing.code,
         name: editing.name,
-        price: String(editing.price),
+        price: String(editing.price)
       })
     } else {
-      setFormData({ code: "", name: "", price: "" })
+      setFormData({ code: '', name: '', price: '' })
     }
   }, [editing])
 
@@ -40,26 +41,27 @@ export default function ProductForm({ editing, setEditing }: Props) {
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }))
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const priceNumber = formData.price.trim() === "" ? 0 : Number(formData.price)
+    const priceNumber =
+      formData.price.trim() === '' ? 0 : Number(formData.price)
 
     const productToSubmit = {
       code: formData.code,
       name: formData.name,
-      price: priceNumber,
+      price: priceNumber
     }
 
     if (editing) {
       dispatch(
         updateProduct({
           id: editing.id!,
-          product: productToSubmit,
+          product: productToSubmit
         })
       )
       setEditing(null)
@@ -67,11 +69,15 @@ export default function ProductForm({ editing, setEditing }: Props) {
       dispatch(createProduct(productToSubmit))
     }
 
-    setFormData({ code: "", name: "", price: "" })
+    setFormData({ code: '', name: '', price: '' })
   }
 
   return (
-    <form key={editing?.id ?? "new"} onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+    <StyledForm
+      key={editing?.id ?? 'new'}
+      onSubmit={handleSubmit}
+      style={{ marginBottom: '20px' }}
+    >
       <input
         name="code"
         placeholder="Code"
@@ -94,12 +100,12 @@ export default function ProductForm({ editing, setEditing }: Props) {
         value={formData.price}
         onChange={handleChange}
       />
-      <button type="submit">{editing ? "Update" : "Create"}</button>
+      <ButtonBlue type="submit">{editing ? 'Update' : 'Create'}</ButtonBlue>
       {editing && (
-        <button type="button" onClick={() => setEditing(null)}>
+        <ButtonRed type="button" onClick={() => setEditing(null)}>
           Cancel
-        </button>
+        </ButtonRed>
       )}
-    </form>
+    </StyledForm>
   )
 }

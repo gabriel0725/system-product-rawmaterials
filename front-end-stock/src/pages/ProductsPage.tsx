@@ -1,15 +1,40 @@
-import { useEffect, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../app/hooks"
-import { fetchProducts, deleteProduct, updateProduct } from "../features/product/productSlice"
-import { fetchRawMaterials } from "../features/rawMaterial/rawMaterialSlice"
-import ProductForm from "../components/ProductForm"
-import type { Product } from "../features/product/types"
-import type { RawMaterial } from "../features/rawMaterial/types"
+import { useEffect, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
+import {
+  fetchProducts,
+  deleteProduct,
+  updateProduct
+} from '../features/product/productSlice'
+import { fetchRawMaterials } from '../features/rawMaterial/rawMaterialSlice'
+import ProductForm from '../components/ProductForm'
+import type { Product } from '../features/product/types'
+import type { RawMaterial } from '../features/rawMaterial/types'
+import {
+  ButtonRed,
+  ButtonBlue,
+  ButtonGreen,
+  Card,
+  Container,
+  Table,
+  MaterialRow,
+  MaterialName,
+  MaterialQuantity,
+  Tr,
+  Thead,
+  Th,
+  Td,
+  TdMaterials,
+  MaterialsSection,
+  MaterialsButtons,
+  SelectedMaterialRow
+} from '../styles/Layout'
 
 export default function ProductsPage() {
   const dispatch = useAppDispatch()
-  const products = useAppSelector(state => state.product.items ?? [])
-  const rawMaterials = useAppSelector(state => state.rawMaterial.rawMaterials ?? [])
+  const products = useAppSelector((state) => state.product.items ?? [])
+  const rawMaterials = useAppSelector(
+    (state) => state.rawMaterial.rawMaterials ?? []
+  )
 
   const [editing, setEditing] = useState<Product | null>(null)
   const [selectedMaterials, setSelectedMaterials] = useState<
@@ -24,13 +49,13 @@ export default function ProductsPage() {
   useEffect(() => {
     if (editing) {
       setSelectedMaterials(
-        editing.materials?.map(m => ({
+        editing.materials?.map((m) => ({
           rawMaterial: {
             id: m.rawMaterialId,
             name: m.rawMaterialName,
             stockQuantity: 0
           },
-          quantity: m.requiredQuantity?.toString() ?? ""
+          quantity: m.requiredQuantity?.toString() ?? ''
         })) ?? []
       )
     } else {
@@ -39,66 +64,78 @@ export default function ProductsPage() {
   }, [editing])
 
   const handleMaterialChange = (id: number, quantity: string) => {
-    setSelectedMaterials(prev =>
-      prev.map(m =>
-        m.rawMaterial.id === id ? { ...m, quantity } : m
-      )
+    setSelectedMaterials((prev) =>
+      prev.map((m) => (m.rawMaterial.id === id ? { ...m, quantity } : m))
     )
   }
 
   const addMaterial = (material: RawMaterial) => {
-    if (!selectedMaterials.find(m => m.rawMaterial.id === material.id)) {
-      setSelectedMaterials(prev => [...prev, { rawMaterial: material, quantity: "" }])
+    if (!selectedMaterials.find((m) => m.rawMaterial.id === material.id)) {
+      setSelectedMaterials((prev) => [
+        ...prev,
+        { rawMaterial: material, quantity: '' }
+      ])
     }
   }
 
   const removeMaterial = (id: number) => {
-    setSelectedMaterials(prev => prev.filter(m => m.rawMaterial.id !== id))
+    setSelectedMaterials((prev) => prev.filter((m) => m.rawMaterial.id !== id))
   }
 
   const saveMaterialAssociations = () => {
     if (editing) {
-      dispatch(updateProduct({
-        id: editing.id,
-        product: {
-          ...editing,
-          materials: selectedMaterials.map(m => ({
-          rawMaterial: { id: m.rawMaterial.id },
-          requiredQuantity: Number(m.quantity)
-        }))
-        }
-      }))
+      dispatch(
+        updateProduct({
+          id: editing.id,
+          product: {
+            ...editing,
+            materials: selectedMaterials.map((m) => ({
+              rawMaterial: { id: m.rawMaterial.id },
+              requiredQuantity: Number(m.quantity)
+            }))
+          }
+        })
+      )
       setEditing(null)
       setSelectedMaterials([])
     }
   }
 
   return (
-    <div className="container">
+    <Container className="container">
       <h1>Products</h1>
 
-      <ProductForm editing={editing} setEditing={setEditing} />
+      <Card>
+        <ProductForm editing={editing} setEditing={setEditing} />
+      </Card>
 
       {editing && (
-        <div style={{ marginBottom: "20px" }}>
+        <MaterialsSection style={{ marginBottom: '20px' }}>
           <h3>Associate Raw Materials</h3>
 
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            {rawMaterials.map(rm => (
-              <button
+          <MaterialsButtons style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {rawMaterials.map((rm) => (
+              <ButtonGreen
                 key={rm.id}
                 onClick={() => addMaterial(rm)}
-                disabled={selectedMaterials.some(m => m.rawMaterial.id === rm.id)}
+                disabled={selectedMaterials.some(
+                  (m) => m.rawMaterial.id === rm.id
+                )}
               >
                 {rm.name}
-              </button>
+              </ButtonGreen>
             ))}
-          </div>
+          </MaterialsButtons>
 
-          {selectedMaterials.map(m => (
-            <div
+          {selectedMaterials.map((m) => (
+            <SelectedMaterialRow
               key={m.rawMaterial.id}
-              style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "5px" }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                marginTop: '5px'
+              }}
             >
               <span>{m.rawMaterial.name}</span>
               <input
@@ -106,53 +143,65 @@ export default function ProductsPage() {
                 min={0}
                 placeholder="Quantity"
                 value={m.quantity}
-                onChange={(e) => handleMaterialChange(m.rawMaterial.id, e.target.value)}
+                onChange={(e) =>
+                  handleMaterialChange(m.rawMaterial.id, e.target.value)
+                }
               />
-              <button onClick={() => removeMaterial(m.rawMaterial.id)}>Remove</button>
-            </div>
+              <ButtonRed onClick={() => removeMaterial(m.rawMaterial.id)}>
+                Remove
+              </ButtonRed>
+            </SelectedMaterialRow >
           ))}
 
-          <button onClick={saveMaterialAssociations} style={{ marginTop: "10px" }}>
+          <ButtonBlue
+            onClick={saveMaterialAssociations}
+            style={{ marginTop: '10px' }}
+          >
             Save Materials
-          </button>
-        </div>
+          </ButtonBlue>
+        </MaterialsSection>
       )}
 
-      <table>
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Necessary Materials</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>Code</Th>
+            <Th>Name</Th>
+            <Th>Price</Th>
+            <Th>Materials/Quantity Needed</Th>
+            <Th>Actions</Th>
+          </Tr>
+        </Thead>
         <tbody>
-          {products.map(p => (
-            <tr key={p.id}>
-              <td>{p.code}</td>
-              <td>{p.name}</td>
-              <td>R$ {p.price?.toFixed(2)}</td>
-              <td>
+          {products.map((p) => (
+            <Tr key={p.id}>
+              <Td>{p.code}</Td>
+              <Td>{p.name}</Td>
+              <Td>R$ {p.price?.toFixed(2)}</Td>
+              <TdMaterials>
                 {p.materials?.length > 0 ? (
-                  p.materials.map(m => (
-                    <div key={m.rawMaterialId}>
-                      {m.rawMaterialName}: {m.requiredQuantity}
-                    </div>
+                  p.materials.map((m) => (
+                    <MaterialRow key={m.rawMaterialId}>
+                      <MaterialName>{m.rawMaterialName}</MaterialName>
+                      <MaterialQuantity>{m.requiredQuantity}</MaterialQuantity>
+                    </MaterialRow>
                   ))
                 ) : (
                   <span>—</span>
                 )}
-              </td>
-              <td>
-                <button onClick={() => setEditing(p)}>Edit</button>
-                <button onClick={() => dispatch(deleteProduct(p.id))}>Delete</button>
-              </td>
-            </tr>
+              </TdMaterials>
+              <Td>
+                <ButtonBlue onClick={() => setEditing(p)}>
+                  Edit/Add Material
+                </ButtonBlue>
+                <ButtonRed onClick={() => dispatch(deleteProduct(p.id))}>
+                  Delete
+                </ButtonRed>
+              </Td>
+            </Tr>
           ))}
         </tbody>
-      </table>
-    </div>
+      </Table>
+    </Container>
   )
 }

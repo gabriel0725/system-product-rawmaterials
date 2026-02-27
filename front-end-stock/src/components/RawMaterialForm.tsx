@@ -1,7 +1,11 @@
-import { useState, useEffect } from "react"
-import { useAppDispatch } from "../app/hooks"
-import { createRawMaterial, updateRawMaterial } from "../features/rawMaterial/rawMaterialSlice"
-import type { RawMaterial } from "../features/rawMaterial/types"
+import { useState, useEffect } from 'react'
+import { useAppDispatch } from '../app/hooks'
+import {
+  createRawMaterial,
+  updateRawMaterial
+} from '../features/rawMaterial/rawMaterialSlice'
+import type { RawMaterial } from '../features/rawMaterial/types'
+import { ButtonRed, ButtonBlue, StyledForm } from '../styles/Layout'
 
 interface Props {
   editing: RawMaterial | null
@@ -12,9 +16,9 @@ export default function RawMaterialForm({ editing, setEditing }: Props) {
   const dispatch = useAppDispatch()
 
   const [formData, setFormData] = useState({
-    code: "",
-    name: "",
-    stockQuantity: "", //string para permitir campo vazio
+    code: '',
+    name: '',
+    stockQuantity: '' //string para permitir campo vazio
   })
 
   //Sincroniza o form com o raw material selecionado para edição
@@ -23,10 +27,10 @@ export default function RawMaterialForm({ editing, setEditing }: Props) {
       setFormData({
         code: editing.code,
         name: editing.name,
-        stockQuantity: String(editing.stockQuantity),
+        stockQuantity: String(editing.stockQuantity)
       })
     } else {
-      setFormData({ code: "", name: "", stockQuantity: "" })
+      setFormData({ code: '', name: '', stockQuantity: '' })
     }
   }, [editing])
 
@@ -34,7 +38,7 @@ export default function RawMaterialForm({ editing, setEditing }: Props) {
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }))
   }
 
@@ -42,19 +46,19 @@ export default function RawMaterialForm({ editing, setEditing }: Props) {
     e.preventDefault()
 
     const stockNumber =
-      formData.stockQuantity.trim() === "" ? 0 : Number(formData.stockQuantity)
+      formData.stockQuantity.trim() === '' ? 0 : Number(formData.stockQuantity)
 
     const rawMaterialToSubmit = {
       code: formData.code,
       name: formData.name,
-      stockQuantity: stockNumber,
+      stockQuantity: stockNumber
     }
 
     if (editing) {
       dispatch(
         updateRawMaterial({
           ...editing,
-          ...rawMaterialToSubmit,
+          ...rawMaterialToSubmit
         })
       )
       setEditing(null)
@@ -62,11 +66,15 @@ export default function RawMaterialForm({ editing, setEditing }: Props) {
       dispatch(createRawMaterial(rawMaterialToSubmit))
     }
 
-    setFormData({ code: "", name: "", stockQuantity: "" })
+    setFormData({ code: '', name: '', stockQuantity: '' })
   }
 
   return (
-    <form key={editing?.id ?? "new"} onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+    <StyledForm
+      key={editing?.id ?? 'new'}
+      onSubmit={handleSubmit}
+      style={{ marginBottom: '20px' }}
+    >
       <input
         name="code"
         placeholder="Code"
@@ -89,12 +97,12 @@ export default function RawMaterialForm({ editing, setEditing }: Props) {
         value={formData.stockQuantity}
         onChange={handleChange}
       />
-      <button type="submit">{editing ? "Update" : "Create"}</button>
+      <ButtonBlue type="submit">{editing ? 'Update' : 'Create'}</ButtonBlue>
       {editing && (
-        <button type="button" onClick={() => setEditing(null)}>
+        <ButtonRed type="button" onClick={() => setEditing(null)}>
           Cancel
-        </button>
+        </ButtonRed>
       )}
-    </form>
+    </StyledForm>
   )
 }

@@ -1,64 +1,76 @@
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useEffect, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
 import {
   deleteRawMaterial,
-  fetchRawMaterials,
-} from "../features/rawMaterial/rawMaterialSlice";
-import RawMaterialForm from "../components/RawMaterialForm";
-import type { RawMaterial } from "../features/rawMaterial/types";
+  fetchRawMaterials
+} from '../features/rawMaterial/rawMaterialSlice'
+import RawMaterialForm from '../components/RawMaterialForm'
+import type { RawMaterial } from '../features/rawMaterial/types'
+
+import {
+  Container,
+  Card,
+  Title,
+  Table,
+  Thead,
+  Th,
+  Td,
+  Tr,
+  ButtonBlue,
+  ButtonRed
+} from '../styles/Layout'
 
 export default function RawMaterialsPage() {
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch()
 
   const { rawMaterials, status, error } = useAppSelector(
     (state) => state.rawMaterial
-  );
+  )
 
-  const [editing, setEditing] = useState<RawMaterial | null>(null);
+  const [editing, setEditing] = useState<RawMaterial | null>(null)
 
   useEffect(() => {
-    dispatch(fetchRawMaterials());
-  }, [dispatch]);
+    dispatch(fetchRawMaterials())
+  }, [dispatch])
 
   return (
-    <div className="container">
-      <h1>Raw Materials</h1>
+    <Container>
+      <Title>Raw Materials</Title>
 
-      {/* Formulário de criação/edição */}
-      <RawMaterialForm editing={editing} setEditing={setEditing} />
+      <Card>
+        <RawMaterialForm editing={editing} setEditing={setEditing} />
+      </Card>
 
-      {/* Status e erros */}
-      {status === "loading" && <p>Loading...</p>}
-      {status === "failed" && <p>{error}</p>}
+      {status === 'loading' && <p>Loading...</p>}
+      {status === 'failed' && <p>{error}</p>}
 
-      {/* Tabela de matérias-primas */}
-     <table>
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Name</th>
-          <th>Stock Quantity</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rawMaterials.map((m) => (
-          <tr key={m.id ?? Math.random()}>
-            <td>{m.code ?? ""}</td>
-            <td>{m.name ?? ""}</td>
-            <td>{m.stockQuantity ?? 0}</td>
-            <td>
-              <button onClick={() => setEditing(m)}>Edit</button>
-              <button
-                onClick={() => m.id && dispatch(deleteRawMaterial(m.id))}
-              >
-                Delete
-              </button>
-            </td>
+      <Table>
+        <Thead>
+          <tr>
+            <Th>Code</Th>
+            <Th>Name</Th>
+            <Th>Stock</Th>
+            <Th>Actions</Th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-    </div>
-  );
+        </Thead>
+        <tbody>
+          {rawMaterials.map((m) => (
+            <Tr key={m.id}>
+              <Td>{m.code}</Td>
+              <Td>{m.name}</Td>
+              <Td>{m.stockQuantity}</Td>
+              <Td>
+                <ButtonBlue onClick={() => setEditing(m)}>Edit</ButtonBlue>
+                <ButtonRed
+                  onClick={() => m.id && dispatch(deleteRawMaterial(m.id))}
+                >
+                  Delete
+                </ButtonRed>
+              </Td>
+            </Tr>
+          ))}
+        </tbody>
+      </Table>
+    </Container>
+  )
 }

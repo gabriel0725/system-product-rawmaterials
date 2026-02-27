@@ -1,17 +1,21 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { GlobalStyle } from "./styles/GlobalStyles"
+import { Nav, NavItem } from "./styles/Navbar"
+
 import ProductsPage from "./pages/ProductsPage"
 import RawMaterialsPage from "./pages/RawMaterialsPage"
 import ProductionPage from "./pages/ProductionPage"
 
-
 function App() {
   return (
     <BrowserRouter>
-      <nav>
-        <Link to="/products">Products</Link>
-        <Link to="/materials">Raw-material</Link>
-        <Link to="/production">Production</Link>
-      </nav>
+      <GlobalStyle />
+
+      <Nav>
+        <NavItem to="/products">Products</NavItem>
+        <NavItem to="/materials">Raw Materials</NavItem>
+        <NavItem to="/production">Production</NavItem>
+      </Nav>
 
       <Routes>
         <Route path="/products" element={<ProductsPage />} />
