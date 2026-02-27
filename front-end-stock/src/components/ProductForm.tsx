@@ -12,7 +12,7 @@ interface Props {
 interface ProductFormData {
   code: string
   name: string
-  price: string // string para permitir campo vazio
+  price: string
 }
 
 export default function ProductForm({ editing, setEditing }: Props) {
@@ -24,16 +24,20 @@ export default function ProductForm({ editing, setEditing }: Props) {
     price: ''
   })
 
-  // Sincroniza o form com o produto selecionado para edição
+  // Sincroniza formulário quando entra em modo edição
   useEffect(() => {
     if (editing) {
       setFormData({
-        code: editing.code,
-        name: editing.name,
-        price: String(editing.price)
+        code: editing.code ?? '',
+        name: editing.name ?? '',
+        price: editing.price != null ? String(editing.price) : ''
       })
     } else {
-      setFormData({ code: '', name: '', price: '' })
+      setFormData({
+        code: '',
+        name: '',
+        price: ''
+      })
     }
   }, [editing])
 
@@ -52,15 +56,15 @@ export default function ProductForm({ editing, setEditing }: Props) {
       formData.price.trim() === '' ? 0 : Number(formData.price)
 
     const productToSubmit = {
-      code: formData.code,
-      name: formData.name,
+      code: formData.code.trim(),
+      name: formData.name.trim(),
       price: priceNumber
     }
 
     if (editing) {
       dispatch(
         updateProduct({
-          id: editing.id!,
+          id: editing.id,
           product: productToSubmit
         })
       )
@@ -69,7 +73,12 @@ export default function ProductForm({ editing, setEditing }: Props) {
       dispatch(createProduct(productToSubmit))
     }
 
-    setFormData({ code: '', name: '', price: '' })
+    // Limpa formulário após envio
+    setFormData({
+      code: '',
+      name: '',
+      price: ''
+    })
   }
 
   return (
@@ -85,6 +94,7 @@ export default function ProductForm({ editing, setEditing }: Props) {
         onChange={handleChange}
         required
       />
+
       <input
         name="name"
         placeholder="Name"
@@ -92,17 +102,26 @@ export default function ProductForm({ editing, setEditing }: Props) {
         onChange={handleChange}
         required
       />
+
       <input
         name="price"
         type="number"
         step="0.01"
+        min="0"
         placeholder="Price"
         value={formData.price}
         onChange={handleChange}
       />
-      <ButtonBlue type="submit">{editing ? 'Update' : 'Create'}</ButtonBlue>
+
+      <ButtonBlue type="submit">
+        {editing ? 'Update' : 'Create'}
+      </ButtonBlue>
+
       {editing && (
-        <ButtonRed type="button" onClick={() => setEditing(null)}>
+        <ButtonRed
+          type="button"
+          onClick={() => setEditing(null)}
+        >
           Cancel
         </ButtonRed>
       )}

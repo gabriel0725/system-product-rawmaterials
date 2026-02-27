@@ -40,3 +40,17 @@ export const deleteProductAPI = async (id: number): Promise<void> => {
 
   if (!response.ok) throw new Error("Error when deleting product");
 };
+
+export const updateProductMaterialsAPI = async (
+  id: number,
+  materials: { rawMaterialId: number; requiredQuantity: number }[]
+): Promise<Product> => {
+  const response = await fetch(`${API_URL}/products/${id}/materials`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(materials),
+  })
+
+  if (!response.ok) throw new Error("Error updating product materials")
+  return response.json()
+}

@@ -4,6 +4,7 @@
 
 package com.gabriel.stock.controller;
 
+import com.gabriel.stock.dto.product.ProductMaterialDTO;
 import com.gabriel.stock.dto.product.ProductResponseDTO;
 import com.gabriel.stock.entity.Product;
 import com.gabriel.stock.service.ProductService;
@@ -47,6 +48,14 @@ public class ProductController {
     @GetMapping("/{id}")
     public Product findById(@PathVariable Long id) {
         return service.findById(id);
+    }
+
+    @PutMapping("/{id}/materials")
+    public Product updateMaterials(
+            @PathVariable Long id,
+            @RequestBody List<ProductMaterialDTO> materials
+    ) {
+        return service.updateMaterials(id, materials);
     }
     }
 

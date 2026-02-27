@@ -51,24 +51,7 @@ public class ProductService {
         existingProduct.setName(updatedProduct.getName());
         existingProduct.setPrice(updatedProduct.getPrice());
 
-        existingProduct.getMaterials().clear();
-
-        if (updatedProduct.getMaterials() != null) {
-            for (ProductMaterial pm : updatedProduct.getMaterials()) {
-
-                RawMaterial rawMaterial = rawMaterialRepository.findById(
-                        pm.getRawMaterial().getId()
-                ).orElseThrow(() -> new ResourceNotFoundException("Raw material not found"));
-
-                ProductMaterial newRelation = ProductMaterial.builder()
-                        .product(existingProduct)
-                        .rawMaterial(rawMaterial)
-                        .requiredQuantity(pm.getRequiredQuantity())
-                        .build();
-
-                existingProduct.getMaterials().add(newRelation);
-            }
-        }
+        // NÃO mexer na lista de materials aqui
 
         return repository.save(existingProduct);
     }
@@ -92,5 +75,28 @@ public class ProductService {
                         ))
                         .collect(Collectors.toList())
         );
+    }
+
+    public Product updateMaterials(Long id, List<ProductMaterialDTO> materialsDTO){
+
+        Product product = findById(id);
+
+        product.getMaterials().clear(); // aqui faz sentido limpar
+
+        for (ProductMaterialDTO dto : materialsDTO) {
+
+            RawMaterial rawMaterial = rawMaterialRepository.findById(dto.rawMaterialId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Raw material not found"));
+
+            ProductMaterial relation = ProductMaterial.builder()
+                    .product(product)
+                    .rawMaterial(rawMaterial)
+                    .requiredQuantity(dto.requiredQuantity())
+                    .build();
+
+            product.getMaterials().add(relation);
+        }
+
+        return repository.save(product);
     }
 }

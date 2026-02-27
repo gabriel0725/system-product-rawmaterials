@@ -3,7 +3,8 @@ import { useAppDispatch, useAppSelector } from '../app/hooks'
 import {
   fetchProducts,
   deleteProduct,
-  updateProduct
+  updateProduct,
+  updateProductMaterials
 } from '../features/product/productSlice'
 import { fetchRawMaterials } from '../features/rawMaterial/rawMaterialSlice'
 import ProductForm from '../components/ProductForm'
@@ -83,23 +84,21 @@ export default function ProductsPage() {
   }
 
   const saveMaterialAssociations = () => {
-    if (editing) {
-      dispatch(
-        updateProduct({
-          id: editing.id,
-          product: {
-            ...editing,
-            materials: selectedMaterials.map((m) => ({
-              rawMaterial: { id: m.rawMaterial.id },
-              requiredQuantity: Number(m.quantity)
-            }))
-          }
-        })
-      )
-      setEditing(null)
-      setSelectedMaterials([])
-    }
+  if (editing) {
+    dispatch(
+      updateProductMaterials({
+        id: editing.id,
+        materials: selectedMaterials.map((m) => ({
+          rawMaterialId: m.rawMaterial.id,
+          requiredQuantity: Number(m.quantity)
+        }))
+      })
+    )
+
+    setEditing(null)
+    setSelectedMaterials([])
   }
+}
 
   return (
     <Container className="container">

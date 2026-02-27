@@ -4,6 +4,7 @@ import {
   createProductAPI,
   updateProductAPI,
   deleteProductAPI,
+  updateProductMaterialsAPI,
 } from "./productAPI"
 import type { Product } from "./types"
 
@@ -86,7 +87,24 @@ const productSlice = createSlice({
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.items = state.items.filter(p => p.id !== action.payload)
       })
-  },
+      .addCase(updateProductMaterials.fulfilled, (state, action) => {
+        const index = state.items.findIndex(p => p.id === action.payload.id)
+        if (index !== -1) {
+      state.items[index] = action.payload
+  }
 })
+  },
+
+})
+
+export const updateProductMaterials = createAsyncThunk<
+  Product,
+  { id: number; materials: { rawMaterialId: number; requiredQuantity: number }[] }
+>(
+  "products/updateMaterials",
+  async ({ id, materials }) => {
+    return await updateProductMaterialsAPI(id, materials)
+  }
+)
 
 export default productSlice.reducer
