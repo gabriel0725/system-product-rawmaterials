@@ -23,8 +23,9 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product create(@RequestBody Product product) {
-        return service.create(product);
+    public ProductResponseDTO create(@RequestBody Product product) {
+        Product created = service.create(product);
+        return service.toDTO(created);
     }
 
     @GetMapping
@@ -35,29 +36,28 @@ public class ProductController {
                 .toList();
     }
 
+    @GetMapping("/{id}")
+    public ProductResponseDTO findById(@PathVariable Long id) {
+        return service.toDTO(service.findById(id));
+    }
+
     @PutMapping("/{id}")
-    public Product update(@PathVariable Long id, @RequestBody Product product) {
-        return service.update(id, product);
+    public ProductResponseDTO update(@PathVariable Long id, @RequestBody Product product) {
+        Product updated = service.update(id, product);
+        return service.toDTO(updated);
+    }
+
+    @PutMapping("/{id}/materials")
+    public ProductResponseDTO updateMaterials(
+            @PathVariable Long id,
+            @RequestBody List<ProductMaterialDTO> materials
+    ) {
+        Product updated = service.updateMaterials(id, materials);
+        return service.toDTO(updated);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         service.deleteById(id);
     }
-
-    @GetMapping("/{id}")
-    public Product findById(@PathVariable Long id) {
-        return service.findById(id);
-    }
-
-    @PutMapping("/{id}/materials")
-    public Product updateMaterials(
-            @PathVariable Long id,
-            @RequestBody List<ProductMaterialDTO> materials
-    ) {
-        return service.updateMaterials(id, materials);
-    }
-    }
-
-
-
+}

@@ -36,13 +36,11 @@ export const createProduct = createAsyncThunk<Product, Omit<Product, "id">>(
 
 export const updateProduct = createAsyncThunk<
   Product,
-  { id: number; product: Product }
+  { id: number; product: Omit<Product, "id" | "materials"> }
 >(
   "products/update",
   async ({ id, product }) => {
-    // Garante que o backend retorna o produto atualizado com materiais
-    const updated = await updateProductAPI(id, product)
-    return updated
+    return await updateProductAPI(id, product)
   }
 )
 
@@ -51,6 +49,16 @@ export const deleteProduct = createAsyncThunk<number, number>(
   async (id) => {
     await deleteProductAPI(id)
     return id
+  }
+)
+
+export const updateProductMaterials = createAsyncThunk<
+  Product,
+  { id: number; materials: { rawMaterialId: number; requiredQuantity: number }[] }
+>(
+  "products/updateMaterials",
+  async ({ id, materials }) => {
+    return await updateProductMaterialsAPI(id, materials)
   }
 )
 
@@ -71,40 +79,25 @@ const productSlice = createSlice({
         state.status = "failed"
         state.error = action.error.message ?? "Erro ao buscar produtos"
       })
-
       .addCase(createProduct.fulfilled, (state, action) => {
         state.items.push(action.payload)
       })
-
       .addCase(updateProduct.fulfilled, (state, action) => {
         const index = state.items.findIndex(p => p.id === action.payload.id)
         if (index !== -1) {
-          // Substitui todo o produto pela versão retornada do backend, incluindo materiais
           state.items[index] = action.payload
         }
-      })
-
-      .addCase(deleteProduct.fulfilled, (state, action) => {
-        state.items = state.items.filter(p => p.id !== action.payload)
       })
       .addCase(updateProductMaterials.fulfilled, (state, action) => {
         const index = state.items.findIndex(p => p.id === action.payload.id)
         if (index !== -1) {
-      state.items[index] = action.payload
-  }
-})
+          state.items[index] = action.payload
+        }
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.items = state.items.filter(p => p.id !== action.payload)
+      })
   },
-
 })
-
-export const updateProductMaterials = createAsyncThunk<
-  Product,
-  { id: number; materials: { rawMaterialId: number; requiredQuantity: number }[] }
->(
-  "products/updateMaterials",
-  async ({ id, materials }) => {
-    return await updateProductMaterialsAPI(id, materials)
-  }
-)
 
 export default productSlice.reducer

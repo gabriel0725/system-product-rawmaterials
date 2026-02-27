@@ -100,6 +100,8 @@ export default function ProductsPage() {
   }
 }
 
+console.log("PRODUCTS STATE:", products)
+
   return (
     <Container className="container">
       <h1>Products</h1>

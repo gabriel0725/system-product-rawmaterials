@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { GlobalStyle } from "./styles/GlobalStyles"
 import { Nav, NavItem } from "./styles/Navbar"
 
@@ -18,6 +18,7 @@ function App() {
       </Nav>
 
       <Routes>
+        <Route path="/" element={<Navigate to="/products" replace />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/materials" element={<RawMaterialsPage />} />
         <Route path="/production" element={<ProductionPage />} />
