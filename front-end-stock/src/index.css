@@ -1,0 +1,21 @@
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td, th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+@media (max-width: 600px) {
+  table, thead, tbody, tr, td, th {
+    display: block;
+  }
+}
