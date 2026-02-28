@@ -18,12 +18,13 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(
-                                "http://localhost:5173",
-                                "https://system-product-rawmaterials-9fu1yadhx.vercel.app"
+                        .allowedOriginPatterns(
+                                "http://localhost:*",
+                                "https://*.vercel.app"
                         )
                         .allowedMethods("*")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*")
+                        .allowCredentials(false);
             }
         };
     }
