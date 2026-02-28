@@ -10,4 +10,6 @@ public class StockApplication {
 		SpringApplication.run(StockApplication.class, args);
 	}
 
+
+	//mvn spring-boot:run -Dspring-boot.run.profiles=prod
 }
