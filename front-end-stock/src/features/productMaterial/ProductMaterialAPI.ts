@@ -1,6 +1,7 @@
 import type { ProductMaterial } from "./productMaterialSlice";
 
-const API_URL = "http://localhost:8080/product-materials";
+const BASE_URL = import.meta.env.VITE_API_URL;
+const API_URL = `${BASE_URL}/product-materials`;
 
 export async function create(data: {
   productId: number;

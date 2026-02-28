@@ -1,7 +1,8 @@
 import type { RawMaterial } from "./types";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+const API_URL = `${BASE_URL}/raw-materials`;
 
-const API_URL = "http://localhost:8080/raw-materials";
 
 async function handleResponse(response: Response) {
   if (!response.ok) {
